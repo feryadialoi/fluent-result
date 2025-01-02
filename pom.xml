@@ -29,6 +29,14 @@
         </repository>
     </repositories>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub feryadialoi Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/feryadialoi/fluent-result</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
