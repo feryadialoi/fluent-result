@@ -59,7 +59,7 @@ class ResultTest {
 
     @Test
     void testMapFailure() {
-        var result = Result.<String, Exception>failure(new NoSuchElementException("failure"));
+        var result = Result.<String>failure(new NoSuchElementException("failure"));
         var newResult = result.map(String::toUpperCase);
         assertNotNull(newResult);
         assertInstanceOf(Failure.class, newResult);
@@ -78,7 +78,7 @@ class ResultTest {
 
     @Test
     void testFlatMapFailure() {
-        var result = Result.<String, Exception>failure(new NoSuchElementException("failure"));
+        var result = Result.<String>failure(new NoSuchElementException("failure"));
         var newResult = result.flatMap(data -> Result.success(data.toUpperCase()));
         assertNotNull(newResult);
         assertInstanceOf(Failure.class, newResult);
@@ -86,19 +86,19 @@ class ResultTest {
         assertInstanceOf(NoSuchElementException.class, resultException.getCause());
     }
 
-    Result<Integer, ArithmeticException> add(Integer a, Integer b) {
+    Result<Integer> add(Integer a, Integer b) {
         return Result.success(a + b);
     }
 
-    Result<Integer, ArithmeticException> subtract(Integer a, Integer b) {
+    Result<Integer> subtract(Integer a, Integer b) {
         return Result.success(a - b);
     }
 
-    Result<Integer, ArithmeticException> multiply(Integer a, Integer b) {
+    Result<Integer> multiply(Integer a, Integer b) {
         return Result.success(a * b);
     }
 
-    Result<Integer, ArithmeticException> divide(Integer a, Integer b) {
+    Result<Integer> divide(Integer a, Integer b) {
         if (b == 0) {
             return Result.failure(new ArithmeticException("divide by zero"));
         }
@@ -108,8 +108,8 @@ class ResultTest {
     @Test
     void testMatch() {
         var finalResult = Result.success("success").match(result -> switch (result) {
-            case Success<String, Exception>(var data) -> Result.success(data.toUpperCase());
-            case Failure<String, Exception> failure -> failure;
+            case Success<String>(var data) -> Result.success(data.toUpperCase());
+            case Failure<String> failure -> failure;
         });
 
         assertEquals("SUCCESS", finalResult.get());
@@ -148,18 +148,18 @@ class ResultTest {
         var added = add(1, 2);
 
         var multiplied = switch (added) {
-            case Success<Integer, ArithmeticException>(var data) -> multiply(data, 10);
-            case Failure<Integer, ArithmeticException> failure -> failure;
+            case Success<Integer>(var data) -> multiply(data, 10);
+            case Failure<Integer> failure -> failure;
         };
 
         var divided = switch (multiplied) {
-            case Success<Integer, ArithmeticException>(var data) -> divide(data, 2);
-            case Failure<Integer, ArithmeticException> failure -> failure;
+            case Success<Integer>(var data) -> divide(data, 2);
+            case Failure<Integer> failure -> failure;
         };
 
         var subtracted = switch (divided) {
-            case Success<Integer, ArithmeticException>(var data) -> subtract(data, 10);
-            case Failure<Integer, ArithmeticException> failure -> failure;
+            case Success<Integer>(var data) -> subtract(data, 10);
+            case Failure<Integer> failure -> failure;
         };
 
         assertEquals(5, subtracted.get());

@@ -1,4 +1,4 @@
 package dev.feryadialoi.fluentresult;
 
-public record Success<T, E extends Exception>(T data) implements Result<T, E> {
+public record Success<T>(T data) implements Result<T> {
 }
