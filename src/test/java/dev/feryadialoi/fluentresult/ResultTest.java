@@ -1,5 +1,6 @@
 package dev.feryadialoi.fluentresult;
 
+import dev.feryadialoi.fluentresult.function.TryRunnable;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
@@ -32,6 +33,39 @@ class ResultTest {
     @Test
     void testFailure() {
         var result = Result.failure(new NoSuchElementException("failure"));
+        assertNotNull(result);
+        assertInstanceOf(Failure.class, result);
+    }
+
+    @Test
+    void testOfTryRunSuccess() {
+        var result = Result.ofTry(() -> {});
+        assertNotNull(result);
+        assertNull(result.get());
+    }
+
+    @Test
+    void testOfTryRunFailure() {
+        var result = Result.ofTry((TryRunnable) () -> {
+            throw new Exception("failure");
+        });
+        assertNotNull(result);
+        assertInstanceOf(Failure.class, result);
+    }
+
+    @Test
+    void testOfTrySupplySuccess() {
+        var result = Result.ofTry(() -> "success");
+        assertNotNull(result);
+        assertInstanceOf(Success.class, result);
+        assertEquals("success", result.get());
+    }
+
+    @Test
+    void testOfTrySupplyFailure() {
+        var result = Result.ofTry(() -> {
+            throw new Exception("failure");
+        });
         assertNotNull(result);
         assertInstanceOf(Failure.class, result);
     }
@@ -145,24 +179,24 @@ class ResultTest {
 
     @Test
     void testPatternMatching() {
-        var added = add(1, 2);
+        var result = add(1, 2);
 
-        var multiplied = switch (added) {
+        result = switch (result) {
             case Success<Integer>(var data) -> multiply(data, 10);
             case Failure<Integer> failure -> failure;
         };
 
-        var divided = switch (multiplied) {
+        result = switch (result) {
             case Success<Integer>(var data) -> divide(data, 2);
             case Failure<Integer> failure -> failure;
         };
 
-        var subtracted = switch (divided) {
+        result = switch (result) {
             case Success<Integer>(var data) -> subtract(data, 10);
             case Failure<Integer> failure -> failure;
         };
 
-        assertEquals(5, subtracted.get());
+        assertEquals(5, result.get());
     }
 
 }

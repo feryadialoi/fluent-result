@@ -1,5 +1,8 @@
 package dev.feryadialoi.fluentresult;
 
+import dev.feryadialoi.fluentresult.function.TryRunnable;
+import dev.feryadialoi.fluentresult.function.TrySupplier;
+
 import java.util.function.Function;
 
 public sealed interface Result<T> permits Failure, Success {
@@ -18,6 +21,23 @@ public sealed interface Result<T> permits Failure, Success {
 
     static <T> Result<T> success(T data) {
         return new Success<>(data);
+    }
+
+    static Result<Void> ofTry(TryRunnable runnable) {
+        try {
+            runnable.run();
+            return success(null);
+        } catch (Exception e) {
+            return failure(e);
+        }
+    }
+
+    static <T> Result<T> ofTry(TrySupplier<T> supplier) {
+        try {
+            return success(supplier.get());
+        } catch (Exception e) {
+            return failure(e);
+        }
     }
 
     default boolean isSuccess() {
