@@ -76,4 +76,17 @@ public sealed interface Result<T> permits Failure, Success {
         };
     }
 
+    default T getValue() {
+        return switch (this) {
+            case Success<T>(T data) -> data;
+            case Failure<T>(Exception exception) -> null;
+        };
+    }
+
+    default Exception getException() {
+        return switch (this) {
+            case Success<T>(T data) -> null;
+            case Failure<T>(Exception exception) -> exception;
+        };
+    }
 }
