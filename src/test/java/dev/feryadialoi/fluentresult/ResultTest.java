@@ -4,6 +4,7 @@ import dev.feryadialoi.fluentresult.function.TryRunnable;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -140,13 +141,10 @@ class ResultTest {
     }
 
     @Test
-    void testMatch() {
-        var finalResult = Result.success("success").match(result -> switch (result) {
-            case Success<String>(var data) -> Result.success(data.toUpperCase());
-            case Failure<String> failure -> failure;
-        });
+    void testFold() {
+        var result = Result.success("success").fold(String::toUpperCase, Function.identity());
 
-        assertEquals("SUCCESS", finalResult.get());
+        assertEquals("SUCCESS", result.get());
     }
 
     @Test

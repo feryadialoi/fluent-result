@@ -62,8 +62,11 @@ public sealed interface Result<T> permits Failure, Success {
         };
     }
 
-    default <U> U match(Function<Result<T>, U> matcher) {
-        return matcher.apply(this);
+    default <U, E extends Exception> Result<U> fold(Function<T, U> successMapper, Function<Exception, E> failureMapper) {
+        return switch (this) {
+            case Success<T>(T data) -> success(successMapper.apply(data));
+            case Failure<T>(Exception exception) -> failure(failureMapper.apply(exception));
+        };
     }
 
     default T get() {
